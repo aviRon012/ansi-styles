@@ -3,12 +3,6 @@
 
 namespace ansi_styles
 {
-enum ColorType
-{
-    SYSTEM,
-    BIT8,
-    RGB
-};
 
 enum Color
 {
@@ -33,7 +27,12 @@ enum Color
 
 struct ColorData
 {
-    ColorType type;
+    enum
+    {
+        SYSTEM,
+        BIT8,
+        RGB
+    } type;
     union {
         Color color;
         unsigned char code;

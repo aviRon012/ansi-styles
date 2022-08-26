@@ -16,7 +16,7 @@ here is an example:
 ```cpp
 #include "ansi-styles.hpp"
 #include <iostream>
-using mamespace ansi_styles;
+using namespace ansi_styles;
 
 int main()
 {

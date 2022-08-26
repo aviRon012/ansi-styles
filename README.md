@@ -8,17 +8,19 @@ ansi escape sequences are used to control appearance of text in terminal emulato
 ## How to use it
 
 1. include `ansi-styles.hpp`,
-1. create an object of type `ansi_styles::Style`,
-1. set the property you want with one of the builtin methods.
+2. use the namespace `ansi_styles`,
+3. create an object of type `Style`,
+4. set the property you want with one of the builtin methods.
 
 here is an example:
 ```cpp
 #include "ansi-styles.hpp"
 #include <iostream>
+using mamespace ansi_styles;
 
 int main()
 {
-    ansi_styles::Style style;
+    Style style;
     style.set_color(RED);
     std::cout << "This text is red" << std::endl;
 }
@@ -35,11 +37,11 @@ here is an example:
 ```c++
 int main()
 {
-    ansi_styles::Style style1;
+    Style style1;
     style1.set_color(RED);
     std::cout << "This text is red" << std::endl;
     {
-        ansi_styles::Style style2;
+        Style style2;
         style2.set_color(BLUE);
         std::cout << "This text is blue" << std::endl;
     }
@@ -59,7 +61,7 @@ style.set_color(RED).set_backgroun_color(BLUE);
 ## Available methods
 
 - there are 3 variants of `set_color()`
-  - `set_color(Color color)` that receives `enum ansi_styles::Color`,
+  - `set_color(Color color)` that receives `enum Color`,
   - `set_color(unsigned char bit8_code`) that receives a number between 0 - 255,
   - `set_color(unsigned chat r, unsigned char g, unsigned char b)` that receives an RGB values.
 - a method `reset_color()` resets the color to time of creation of the object.
@@ -67,7 +69,7 @@ style.set_color(RED).set_backgroun_color(BLUE);
 - a method `reset_backgroun_color()`,
 - a method `reset()` that resets both.
 
-## The type `enum ansi_styles::Color`
+## The type `enum Color`
 
 Theses are the builtin colors:
 - `DEFAULT` the system default,

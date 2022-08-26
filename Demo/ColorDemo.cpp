@@ -1,4 +1,4 @@
-#include "..\src\ansi-styles.hpp"
+#include "../src/ansi-styles.hpp"
 #include <iostream>
 using namespace std;
 using namespace ansi_styles;
@@ -130,6 +130,8 @@ void printMoreColors()
         style.set_background_color(i);
         cout << "   ";
     }
+    style.reset();
+    cout << endl;
 }
 
 int main()

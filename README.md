@@ -26,6 +26,8 @@ int main()
 }
 ```
 
+![example result 1](assets/example-result1.png "example result 1")
+
 ## Features
 
 ### Auto resetting
@@ -49,14 +51,20 @@ int main()
 }
 ```
 
+![example result 2](assets/example-result2.png "example result 2")
+
 ### Chaining
 
 - methods retun a reference to the object so methods can be chaind.
 
 like this:
 ```c++
-style.set_color(RED).set_backgroun_color(BLUE);
+Style style;
+style.set_color(RED).set_background_color(BLUE);
+std::cout << "this text is red on blue" << std::endl;
 ```
+
+![example result 3](assets/example-result3.png "example result 3")
 
 ## Available methods
 
@@ -66,7 +74,7 @@ style.set_color(RED).set_backgroun_color(BLUE);
   - `set_color(unsigned chat r, unsigned char g, unsigned char b)` that receives an RGB values.
 - a method `reset_color()` resets the color to time of creation of the object.
 - there are 3 variants of `set_background_color()` same as the above but for the background,
-- a method `reset_backgroun_color()`,
+- a method `reset_background_color()`,
 - a method `reset()` that resets both.
 
 ## The type `enum Color`

@@ -1,123 +1,116 @@
 #include "ansi-styles.hpp"
-#include <iostream>
-using std::cout;
 using std::flush;
+using std::string;
+using std::to_string;
 
 namespace ansi_styles
 {
-ColorData Style::current_color = {ColorData::SYSTEM, DEFAULT};
-ColorData Style::current_background_color = {ColorData::SYSTEM, DEFAULT};
+static ColorData current_color = {ColorData::SYSTEM, DEFAULT};
+static ColorData current_background = {ColorData::SYSTEM, DEFAULT};
 
-Style::Style() : parant_color(current_color), parant_background_color(current_background_color)
+string get_color_sequence()
+{
+    switch (current_color.type)
+    {
+    case ColorData::SYSTEM:
+        if (current_color.data.color > WHITE)
+            return string("\033[") + to_string(90 + current_color.data.color - 8) + 'm';
+        if (current_color.data.color > DEFAULT)
+            return string("\033[") + to_string(30 + current_color.data.color) + 'm';
+        return "\033[39m";
+    case ColorData::BIT8:
+        return string("\033[38;5;") + to_string(current_color.data.code) + 'm';
+    case ColorData::RGB:
+        return string("\033[38;2;") + to_string(current_color.data.rgb.r) + ';' + to_string(current_color.data.rgb.g) +
+               ';' + to_string(current_color.data.rgb.b) + 'm';
+    default:
+        return "";
+    }
+}
+
+string get_background_sequence()
+{
+    switch (current_background.type)
+    {
+    case ColorData::SYSTEM:
+        if (current_background.data.color > WHITE)
+            return string("\033[") + to_string(100 + current_background.data.color - 8) + 'm';
+        if (current_background.data.color > DEFAULT)
+            return string("\033[") + to_string(40 + current_background.data.color) + 'm';
+        return "\033[49m";
+    case ColorData::BIT8:
+        return string("\033[48;5;") + to_string(current_background.data.code) + 'm';
+    case ColorData::RGB:
+        return string("\033[48;2;") + to_string(current_background.data.rgb.r) + ';' +
+               to_string(current_background.data.rgb.g) + ';' + to_string(current_background.data.rgb.b) + 'm';
+    default:
+        return "";
+    }
+}
+
+Style::Style() : parant_color(current_color), parant_background(current_background)
 {
 }
 
 Style::~Style()
 {
-    reset();
+    std::cout << (*this)();
 }
 
-const Style &Style::set_color(Color color) const
+string color(Color color)
 {
     current_color = {ColorData::SYSTEM, color};
-    int code = 39;
-    if (color > WHITE)
-    {
-        code = 90 + color - 8;
-    }
-    else if (color > DEFAULT)
-    {
-        code = 30 + color;
-    }
-    cout << "\033[" << code << 'm' << flush;
-    return *this;
+    return get_color_sequence();
 }
 
-const Style &Style::set_color(unsigned char bit8_code) const
+string color(unsigned char bit8_code)
 {
     current_color.type = ColorData::BIT8;
     current_color.data.code = bit8_code;
-    cout << "\033[38;5;" << int(bit8_code) << 'm' << flush;
-    return *this;
+    return get_color_sequence();
 }
 
-const Style &Style::set_color(unsigned char r, unsigned char g, unsigned char b) const
+string color(unsigned char r, unsigned char g, unsigned char b)
 {
     current_color.type = ColorData::RGB;
     current_color.data.rgb = {r, g, b};
-    cout << "\033[38;2;" << int(r) << ';' << int(g) << ';' << int(b) << 'm' << flush;
-    return *this;
+    return get_color_sequence();
 }
 
-const Style &Style::set_background_color(Color color) const
+string background(Color color)
 {
-    current_color = {ColorData::SYSTEM, color};
-    int code = 49;
-    if (color > WHITE)
-    {
-        code = 100 + color - 8;
-    }
-    else if (color > DEFAULT)
-    {
-        code = 40 + color;
-    }
-    cout << "\033[" << code << 'm' << flush;
-    return *this;
+    current_background = {ColorData::SYSTEM, color};
+    return get_background_sequence();
 }
 
-const Style &Style::set_background_color(unsigned char bit8_code) const
+string background(unsigned char bit8_code)
 {
-    current_background_color.type = ColorData::BIT8;
-    current_background_color.data.code = bit8_code;
-    cout << "\033[48;5;" << int(bit8_code) << 'm' << flush;
-    return *this;
+    current_background.type = ColorData::BIT8;
+    current_background.data.code = bit8_code;
+    return get_background_sequence();
 }
 
-const Style &Style::set_background_color(unsigned char r, unsigned char g, unsigned char b) const
+string background(unsigned char r, unsigned char g, unsigned char b)
 {
-    current_background_color.type = ColorData::RGB;
-    current_background_color.data.rgb = {r, g, b};
-    cout << "\033[48;2;" << int(r) << ';' << int(g) << ';' << int(b) << 'm' << flush;
-    return *this;
+    current_background.type = ColorData::RGB;
+    current_background.data.rgb = {r, g, b};
+    return get_background_sequence();
 }
 
-Style &Style::reset_color()
+string Style::color() const
 {
-    if (parant_color.type == ColorData::SYSTEM)
-    {
-        set_color(parant_color.data.color);
-    }
-    else if (parant_color.type == ColorData::BIT8)
-    {
-        set_color(parant_color.data.code);
-    }
-    else
-    {
-        set_color(parant_color.data.rgb.r, parant_color.data.rgb.g, parant_color.data.rgb.b);
-    }
-    return *this;
+    current_color = parant_color;
+    return get_color_sequence();
 }
 
-Style &Style::reset_background_color()
+string Style::background() const
 {
-    if (parant_background_color.type == ColorData::SYSTEM)
-    {
-        set_background_color(parant_background_color.data.color);
-    }
-    else if (parant_background_color.type == ColorData::BIT8)
-    {
-        set_background_color(parant_background_color.data.code);
-    }
-    else
-    {
-        set_background_color(parant_background_color.data.rgb.r, parant_background_color.data.rgb.g,
-                             parant_background_color.data.rgb.b);
-    }
-    return *this;
+    current_background = parant_background;
+    return get_background_sequence();
 }
 
-Style &Style::reset()
+string Style::operator()() const
 {
-    return reset_color().reset_background_color();
+    return this->color() + this->background();
 }
 } // namespace ansi_styles

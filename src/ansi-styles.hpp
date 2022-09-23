@@ -1,8 +1,13 @@
 #ifndef ANSI_STYLES_HPP
 #define ANSI_STYLES_HPP
 
+#include <iostream>
+#include <string>
+
 namespace ansi_styles
 {
+
+typedef std::ostream &(*iomanip)(std::ostream &);
 
 enum Color
 {
@@ -45,25 +50,25 @@ struct ColorData
 
 class Style
 {
-    static ColorData current_color;
-    static ColorData current_background_color;
-
     const ColorData parant_color;
-    const ColorData parant_background_color;
+    const ColorData parant_background;
 
   public:
     Style();
     ~Style();
-    const Style &set_color(Color color) const;
-    const Style &set_color(unsigned char bit8_code) const;
-    const Style &set_color(unsigned char r, unsigned char g, unsigned char b) const;
-    const Style &set_background_color(Color color) const;
-    const Style &set_background_color(unsigned char bit8_code) const;
-    const Style &set_background_color(unsigned char r, unsigned char g, unsigned char b) const;
-    Style &reset_color();
-    Style &reset_background_color();
-    Style &reset();
+
+    std::string color() const;
+    std::string background() const;
+    std::string operator()() const;
 };
+
+std::string color(Color color);
+std::string color(unsigned char bit8_code);
+std::string color(unsigned char r, unsigned char g, unsigned char b);
+std::string background(Color color);
+std::string background(unsigned char bit8_code);
+std::string background(unsigned char r, unsigned char g, unsigned char b);
+
 } // namespace ansi_styles
 
 #endif // ANSI_STYLES_HPP

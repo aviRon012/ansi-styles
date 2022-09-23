@@ -1,5 +1,4 @@
 #include "ansi-styles.hpp"
-using std::flush;
 using std::string;
 using std::to_string;
 

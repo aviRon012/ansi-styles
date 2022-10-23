@@ -47,11 +47,11 @@ string get_background_sequence()
     }
 }
 
-Style::Style() : parant_color(current_color), parant_background(current_background)
+ResetPoint::ResetPoint() : parant_color(current_color), parant_background(current_background)
 {
 }
 
-Style::~Style()
+ResetPoint::~ResetPoint()
 {
     std::cout << (*this)();
 }
@@ -96,19 +96,19 @@ string background(unsigned char r, unsigned char g, unsigned char b)
     return get_background_sequence();
 }
 
-string Style::color() const
+string ResetPoint::color() const
 {
     current_color = parant_color;
     return get_color_sequence();
 }
 
-string Style::background() const
+string ResetPoint::background() const
 {
     current_background = parant_background;
     return get_background_sequence();
 }
 
-string Style::operator()() const
+string ResetPoint::operator()() const
 {
     return this->color() + this->background();
 }

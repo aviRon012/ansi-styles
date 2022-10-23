@@ -9,8 +9,8 @@ ansi escape sequences are used to control appearance of text in terminal emulato
 
 1. include `ansi-styles.hpp`,
 2. use the namespace `ansi_styles`,
-3. create an object of type `Style`,
-4. set the property you want with one of the builtin methods.
+3. create a `ResetPoint` object,
+4. set the property you want with one of the builtin functions.
 
 here is an example:
 ```cpp
@@ -20,17 +20,15 @@ using namespace ansi_styles;
 
 int main()
 {
-    Style style;
-    style.set_color(RED);
+    ResetPoint reset;
+    color(RED);
     std::cout << "This text is red" << std::endl;
 }
 ```
 
 ![example result 1](assets/example-result1.png "example result 1")
 
-## Features
-
-### Auto resetting
+## Auto resetting
 
 - the constructor of the object memorizes the style at that moment,
 - when the object goes out of scope the destructor resets the style to the time of the creation.
@@ -39,12 +37,12 @@ here is an example:
 ```c++
 int main()
 {
-    Style style1;
-    style1.set_color(RED);
+    ResetPoint reset1;
+    color(RED);
     std::cout << "This text is red" << std::endl;
     {
-        Style style2;
-        style2.set_color(BLUE);
+        ResetPoint reset2;
+        color(BLUE);
         std::cout << "This text is blue" << std::endl;
     }
     std::cout << "Back to red again" << std::endl;
@@ -53,29 +51,16 @@ int main()
 
 ![example result 2](assets/example-result2.png "example result 2")
 
-### Chaining
+## Available methods and fuctions
 
-- methods retun a reference to the object so methods can be chaind.
-
-like this:
-```c++
-Style style;
-style.set_color(RED).set_background_color(BLUE);
-std::cout << "this text is red on blue" << std::endl;
-```
-
-![example result 3](assets/example-result3.png "example result 3")
-
-## Available methods
-
-- there are 3 variants of `set_color()`
-  - `set_color(Color color)` that receives `enum Color`,
-  - `set_color(unsigned char bit8_code`) that receives a number between 0 - 255,
-  - `set_color(unsigned chat r, unsigned char g, unsigned char b)` that receives an RGB values.
-- a method `reset_color()` resets the color to time of creation of the object.
-- there are 3 variants of `set_background_color()` same as the above but for the background,
-- a method `reset_background_color()`,
-- a method `reset()` that resets both.
+- there are 3 variants of the `color()` function:
+  - `color(Color color)` that receives `enum Color`,
+  - `color(unsigned char bit8_code`) that receives a number between 0 - 255,
+  - `set_color(unsigned chat r, unsigned char g, unsigned char b)` that receives RGB values.
+- a method `color()` that resets the color to time of creation of the object.
+- there are 3 variants of the `background()` function, same as the above but for the background,
+- a method `background()` that resets the background,
+- a method `reset()` that resets both color and background.
 
 ## The type `enum Color`
 

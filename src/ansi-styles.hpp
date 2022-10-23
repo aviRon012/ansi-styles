@@ -48,14 +48,14 @@ struct ColorData
     } data;
 };
 
-class Style
+class ResetPoint
 {
     const ColorData parant_color;
     const ColorData parant_background;
 
   public:
-    Style();
-    ~Style();
+    ResetPoint();
+    ~ResetPoint();
 
     std::string color() const;
     std::string background() const;

@@ -7,8 +7,6 @@
 namespace ansi_styles
 {
 
-typedef std::ostream &(*iomanip)(std::ostream &);
-
 enum Color
 {
     DEFAULT = -1,

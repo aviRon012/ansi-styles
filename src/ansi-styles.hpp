@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <string>
-
+#include <variant>
+#include <cstdint>
 namespace ansi_styles
 {
 
@@ -28,23 +29,14 @@ enum Color
     BRIGHT_WHITE
 };
 
-struct ColorData
-{
-    enum
-    {
-        SYSTEM,
-        BIT8,
-        RGB
-    } type;
-    union {
-        Color color;
-        unsigned char code;
-        struct
-        {
-            unsigned char r, g, b;
-        } rgb;
-    } data;
+using HexColorStr = char[7];
+struct RGB {
+    std::uint8_t r, g, b;
+    RGB(std::uint8_t r, std::uint8_t g, std::uint8_t b);
+    RGB(HexColorStr);
 };
+using ColorCode = std::uint8_t;
+using ColorData = std::variant<Color, ColorCode, RGB>;
 
 class ResetPoint
 {
@@ -60,12 +52,12 @@ class ResetPoint
     std::string operator()() const;
 };
 
-std::string color(Color color);
-std::string color(unsigned char bit8_code);
-std::string color(unsigned char r, unsigned char g, unsigned char b);
-std::string background(Color color);
-std::string background(unsigned char bit8_code);
-std::string background(unsigned char r, unsigned char g, unsigned char b);
+std::string color(ColorData data);
+std::string color(std::uint8_t r, std::uint8_t g, std::uint8_t b);
+std::string color(HexColorStr hex_color_str);
+std::string background(ColorData data);
+std::string background(std::uint8_t r, std::uint8_t g, std::uint8_t b);
+std::string background(HexColorStr hex_color_str);
 
 } // namespace ansi_styles
 

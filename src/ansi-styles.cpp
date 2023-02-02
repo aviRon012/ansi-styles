@@ -1,50 +1,53 @@
 #include "ansi-styles.hpp"
 using std::string;
 using std::to_string;
-
+using std::get_if;
+using std::uint8_t;
+using std::stoi;
 namespace ansi_styles
 {
-static ColorData current_color = {ColorData::SYSTEM, DEFAULT};
-static ColorData current_background = {ColorData::SYSTEM, DEFAULT};
+RGB::RGB(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 
-string get_color_sequence()
-{
-    switch (current_color.type)
-    {
-    case ColorData::SYSTEM:
-        if (current_color.data.color > WHITE)
-            return string("\033[") + to_string(90 + current_color.data.color - 8) + 'm';
-        if (current_color.data.color > DEFAULT)
-            return string("\033[") + to_string(30 + current_color.data.color) + 'm';
-        return "\033[39m";
-    case ColorData::BIT8:
-        return string("\033[38;5;") + to_string(current_color.data.code) + 'm';
-    case ColorData::RGB:
-        return string("\033[38;2;") + to_string(current_color.data.rgb.r) + ';' + to_string(current_color.data.rgb.g) +
-               ';' + to_string(current_color.data.rgb.b) + 'm';
-    default:
-        return "";
-    }
+RGB::RGB(HexColorStr hex_color_str) {
+    int color = stoi(hex_color_str, 0, 16);
+    r = (color >> 16) & 0xff;
+    g = (color >> 8) & 0xff;
+    b = color & 0xff;
 }
 
-string get_background_sequence()
+static ColorData current_color = DEFAULT;
+static ColorData current_background = DEFAULT;
+
+static string get_color_sequence()
 {
-    switch (current_background.type)
-    {
-    case ColorData::SYSTEM:
-        if (current_background.data.color > WHITE)
-            return string("\033[") + to_string(100 + current_background.data.color - 8) + 'm';
-        if (current_background.data.color > DEFAULT)
-            return string("\033[") + to_string(40 + current_background.data.color) + 'm';
-        return "\033[49m";
-    case ColorData::BIT8:
-        return string("\033[48;5;") + to_string(current_background.data.code) + 'm';
-    case ColorData::RGB:
-        return string("\033[48;2;") + to_string(current_background.data.rgb.r) + ';' +
-               to_string(current_background.data.rgb.g) + ';' + to_string(current_background.data.rgb.b) + 'm';
-    default:
-        return "";
+    if (auto color = get_if<Color>(&current_color)) {
+        if (*color > WHITE) return string("\033[") + to_string(90 + *color - 8) + 'm';
+        if (*color > DEFAULT) return string("\033[") + to_string(30 + *color) + 'm';
+        return "\033[39m";
     }
+    if (auto color_code = get_if<ColorCode>(&current_color)) {
+        return string("\033[38;5;") + to_string(*color_code) + 'm';
+    }
+    if (auto rgb = get_if<RGB>(&current_color)) {
+        return string("\033[38;2;") + to_string(rgb->r) + ';' + to_string(rgb->g) + ';' + to_string(rgb->b) + 'm';
+    }
+    return "";
+}
+
+static string get_background_sequence()
+{
+    if (auto color = get_if<Color>(&current_background)) {
+        if (*color > WHITE) return string("\033[") + to_string(100 + *color - 8) + 'm';
+        if (*color > DEFAULT) return string("\033[") + to_string(40 + *color) + 'm';
+        return "\033[49m";
+    }
+    if (auto color_code = get_if<ColorCode>(&current_background)) {
+        return string("\033[48;5;") + to_string(*color_code) + 'm';
+    }
+    if (auto rgb = get_if<RGB>(&current_background)) {
+        return string("\033[48;2;") + to_string(rgb->r) + ';' + to_string(rgb->g) + ';' + to_string(rgb->b) + 'm';
+    }
+    return "";
 }
 
 ResetPoint::ResetPoint() : parant_color(current_color), parant_background(current_background)
@@ -56,46 +59,37 @@ ResetPoint::~ResetPoint()
     std::cout << (*this)();
 }
 
-string color(Color color)
+string color(ColorData data)
 {
-    current_color = {ColorData::SYSTEM, color};
+    current_color = data;
     return get_color_sequence();
 }
 
-string color(unsigned char bit8_code)
+string color(std::uint8_t r, std::uint8_t g, std::uint8_t b)
 {
-    current_color.type = ColorData::BIT8;
-    current_color.data.code = bit8_code;
-    return get_color_sequence();
+    return color(RGB(r, g, b));
 }
 
-string color(unsigned char r, unsigned char g, unsigned char b)
+string color(HexColorStr hex_color_str)
 {
-    current_color.type = ColorData::RGB;
-    current_color.data.rgb = {r, g, b};
-    return get_color_sequence();
+    return color(RGB(hex_color_str));
 }
 
-string background(Color color)
+string background(ColorData data)
 {
-    current_background = {ColorData::SYSTEM, color};
+    current_background = data;
     return get_background_sequence();
 }
 
-string background(unsigned char bit8_code)
+string background(std::uint8_t r, std::uint8_t g, std::uint8_t b)
 {
-    current_background.type = ColorData::BIT8;
-    current_background.data.code = bit8_code;
-    return get_background_sequence();
+    return background(RGB(r, g, b));
 }
 
-string background(unsigned char r, unsigned char g, unsigned char b)
+string background(HexColorStr hex_color_str)
 {
-    current_background.type = ColorData::RGB;
-    current_background.data.rgb = {r, g, b};
-    return get_background_sequence();
+    return background(RGB(hex_color_str));
 }
-
 string ResetPoint::color() const
 {
     current_color = parant_color;

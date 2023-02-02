@@ -69,21 +69,36 @@ void printMoreColors()
     cout << "Here are more colors" << endl;
     ResetPoint reset6;
     for (int i = 0; i < 8; ++i)
-        cout << background(i) << "         ";
+        cout << background(ColorCode(i)) << "         ";
     cout << reset6.background() << endl;
     for (int i = 8; i < 16; ++i)
-        cout << background(i) << "         ";
+        cout << background(ColorCode(i)) << "         ";
     cout << reset6.background() << endl;
     for (int i = 0; i < 36; i += 6)
     {
         for (int j = 16; j < 232; j += 36)
             for (int k = 0; k < 6; ++k)
-                cout << background(j + i + k) << "  ";
+                cout << background(ColorCode(j + i + k)) << "  ";
         cout << reset6.background() << endl;
     }
     for (int i = 232; i < 256; ++i)
-        cout << background(i) << "   ";
+        cout << background(ColorCode(i)) << "   ";
     cout << reset6.background() << endl;
+}
+
+void printRGBColors()
+{
+    cout << "here are even more colors" << endl;
+    ResetPoint reset7;
+    for (int b1 = 0; b1 < 256; b1 += 17*4) {
+        for (int g = 0; g < 256; g += 17) {
+            for(int b2 = 0; b2 < 17*4; b2 += 17)
+                for (int r = 0; r < 256; r += 17) {
+                    cout << background(r, g, b1 + b2) << ' ';
+                }
+            cout << reset7.background() << endl;
+        }
+    }
 }
 
 int main()
@@ -101,4 +116,7 @@ int main()
     printColorNames();
     printAllCombinations();
     printMoreColors();
+    printRGBColors();
+    HexColorStr hex_color = "FfAa55";
+    cout << color(hex_color) << hex_color << endl;
 }
